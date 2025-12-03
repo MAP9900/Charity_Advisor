@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Charity Advisor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <style>
+    #featured-section {
+      padding: var(--space-6, 48px) 0;
+      background: #f8fbff;
+    }
+    #featured-section .section-heading {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .featured-message {
+      font-size: 0.95rem;
+      color: #555;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .carousel-viewport {
+      overflow: hidden;
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .carousel-track {
+      display: flex;
+      gap: 1rem;
+      will-change: transform;
+      transition: transform 0.2s linear;
+    }
+    .carousel-controls {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .carousel-btn {
+      border: 1px solid var(--color-border, #e0e4ef);
+      background: var(--color-surface, #fff);
+      color: var(--color-text, #131523);
+      padding: 0.5rem 1.25rem;
+      border-radius: var(--radius-md, 12px);
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .carousel-btn:hover,
+    .carousel-btn:focus-visible {
+      background: var(--color-primary, #2e65f7);
+      color: #fff;
+    }
+    .charity-card {
+      flex: 0 0 320px;
+      border-radius: var(--radius-lg, 14px);
+      padding: var(--space-5, 24px);
+      background-color: var(--color-surface, #ffffff);
+      box-shadow: var(--shadow-card, 0 8px 20px rgba(27, 39, 94, 0.08));
+      border: 1px solid var(--color-border, #e0e4ef);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .charity-card h3 {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+    .charity-card a {
+      text-decoration: none;
+      color: inherit;
+    }
+    .charity-card h3 a {
+      color: var(--color-primary, #2e65f7);
+      font-weight: 600;
+    }
+    .charity-card h3 a:hover {
+      text-decoration: underline;
+    }
+    .charity-meta {
+      font-size: 0.9rem;
+      color: var(--color-muted, #4d5468);
+    }
+    .charity-description {
+      font-size: 0.95rem;
+      color: var(--color-text, #131523);
+      flex-grow: 1;
+    }
+    .charity-website-link {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--color-primary, #2e65f7);
+    }
+    .featured-placeholder {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="index.html">
+        <img src="assets/logo.svg" alt="Charity Advisor" width="36" height="36" />
+        <span>Charity Advisor</span>
+      </a>
+      <nav>
+        <a href="survey.html">Survey</a>
+        <a href="privacy.html">Privacy</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="container grid">
+        <div>
+          <p class="eyebrow">Give with Purpose</p>
+          <h1 id="hero-title">Personalized charity recommendations in just a few minutes</h1>
+          <p class="lead">
+            Fill out our quick survey and we will return personalized organizations that match your 
+            interests, values, and preferred ways to donate.
+          </p>
+          <div class="hero-cta">
+            <a id="cta-start" class="button" href="survey.html">Start the survey</a>
+          </div>
+        </div>
+       
+      </div>
+    </section>
+
+    <section class="how-it-works" id="how-it-works">
+      <div class="container">
+        <h2>How it works</h2>
+        <ol class="steps">
+          <p class="lead">
+            Our curated survey matches your responses to one or more of the IRS's National Taxonomy of Exempt Entities
+            (NTEE) codes. These codes contain identifying information about a charity such as their main cause and 
+            specific focus. Then, using the Ever.org API we filter for results with the matched NTEE codes and few other
+            variables. 
+
+            Don't like your first three results? Click the Load More button to bring up new charity recommendations.  
+
+          </p>
+        </ol>
+      </div>
+    </section>
+
+    <section id="featured-section" aria-labelledby="featured-heading">
+      <div class="container">
+        <div class="section-heading">
+          <h2 id="featured-heading">Featured Charities</h2>
+          <p class="featured-message" id="featured-message"></p>
+        </div>
+        <div class="carousel-viewport">
+          <div id="carousel-track" class="carousel-track" aria-live="polite" aria-busy="true"></div>
+        </div>
+        <div class="carousel-controls" aria-hidden="false">
+          <button id="carousel-prev" class="carousel-btn" type="button" aria-label="Show previous featured charities">Previous</button>
+          <button id="carousel-next" class="carousel-btn" type="button" aria-label="Show next featured charities">Next</button>
+        </div>
+        <p id="featured-fallback" class="featured-placeholder hidden">Loading featured charities…</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>____</p>
+      <div class="footer-links">
+        <a href="survey.html">Survey</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="https://docs.every.org/docs/endpoints/nonprofit-search" rel="noreferrer">Data source</a>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="assets/app.js"></script>
+  <script src="assets/home.js"></script>
+</body>
+</html>
