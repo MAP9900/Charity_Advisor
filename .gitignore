@@ -181,7 +181,6 @@ cython_debug/
 .cursorindexingignore
 
 #CSV Files
-data/cleaned_irs_charities.csv
 data/eo1.csv
 data/eo2.csv
 data/eo3.csv
