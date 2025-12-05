@@ -9,17 +9,14 @@ Backend quickstart
 """
 
 from __future__ import annotations
-
 import datetime
 import os
 import random
 from typing import Any, Dict, List, Optional, Sequence
-
 import requests
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-
 from catalog import CharityRow, fetch_random_pool_for_deciles
 
 EVERY_NONPROFIT_BASE_URL = "https://partners.every.org/v0.2/nonprofit"
