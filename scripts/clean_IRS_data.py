@@ -149,7 +149,6 @@ def load_raw_irs_data(region_files: List[str]) -> pd.DataFrame:
     print(f"Loaded {len(frames)} files; combined rows: {len(merged):,}")
     return merged
 
-
 def normalize_columns(df: pd.DataFrame) -> pd.DataFrame:
     """Normalize column names and keep only the canonical set we care about."""
     df = df.copy()
@@ -165,7 +164,6 @@ def normalize_columns(df: pd.DataFrame) -> pd.DataFrame:
         "ntee_cd": "ntee_code",
         "nteecc": "ntee_code",
         "ntee_code": "ntee_code",}
-
     renamed = {}
     for col in df.columns:
         target = column_map.get(col, col)
@@ -178,7 +176,6 @@ def normalize_columns(df: pd.DataFrame) -> pd.DataFrame:
             df[col] = pd.NA
 
     return df[wanted_cols]
-
 
 def clean_irs_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     """Clean and filter the IRS DataFrame down to 501(c)(3) charities with valid NTEE codes."""
@@ -193,8 +190,7 @@ def clean_irs_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         df["ein"]
         .astype(str)
         .str.replace(r"[^0-9]", "", regex=True)
-        .str.zfill(9)
-    )
+        .str.zfill(9))
     df = df[df["ein"].str.len() == 9]
     print(f"Rows after EIN normalization: {len(df):,}")
 
@@ -214,13 +210,10 @@ def clean_irs_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     def is_501c3(row: pd.Series) -> bool:
         subseccd_raw = row.get("subseccd")
         subsection_raw = row.get("subsection")
-
         subseccd = "" if pd.isna(subseccd_raw) else str(subseccd_raw).strip()
         subsection = "" if pd.isna(subsection_raw) else str(subsection_raw).strip().lower()
-
         if subseccd.isdigit():
             return subseccd == "3"
-
         if subsection:
             return subsection == "3" or subsection.endswith("03") or subsection.startswith("3")
         return False
@@ -240,7 +233,6 @@ def clean_irs_dataframe(df: pd.DataFrame) -> pd.DataFrame:
             df[col] = pd.NA
     return df[required_cols]
 
-
 def main() -> None:
     raw_df = load_raw_irs_data(REGION_FILES)
     normalized_df = normalize_columns(raw_df)
@@ -252,7 +244,6 @@ def main() -> None:
     print(f"Saved cleaned data to {OUTPUT_FILE} (rows: {len(cleaned_df):,})")
     print("Sample rows:")
     print(cleaned_df.head())
-
 
 if __name__ == "__main__":
     main()

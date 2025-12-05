@@ -127,8 +127,7 @@ GENERIC_TO_NTEE: Dict[str, List[str]] = {
     "Y0": ["Y30", "Y33", "Y34", "Y40"],
     "Y1": ["Y20", "Y22", "Y99"],
     "Y2": ["Y50", "Y60", "Y70"],
-    "Y3": ["Y01", "Y02", "Y03", "Y05", "Y11", "Y12", "Y19"],
-}
+    "Y3": ["Y01", "Y02", "Y03", "Y05", "Y11", "Y12", "Y19"],}
 
 ALLOWED_ORIGINS = [
     "https://map9900.github.io",
@@ -137,18 +136,15 @@ ALLOWED_ORIGINS = [
     "http://localhost:5500",
     "http://127.0.0.1:5500",]
 
-
 class SurveyRequest(BaseModel):
     generic_code: str
     location: str
-
 
 class CharityResponse(BaseModel):
     generic_code: str
     location: str
     ntee_codes: Sequence[str]
     charities: Sequence[Dict[str, Optional[str]]]
-
 
 def normalize_state(location: str) -> str:
     """
@@ -163,7 +159,6 @@ def normalize_state(location: str) -> str:
         return loc.upper()
     return "any"
 
-
 def group_charities_by_decile(rows: List[CharityRow]) -> Dict[str, List[Dict[str, Optional[str]]]]:
     """
     Group catalog rows by NTEE decile and normalize them into the
@@ -174,7 +169,6 @@ def group_charities_by_decile(rows: List[CharityRow]) -> Dict[str, List[Dict[str
         decile = row.get("ntee_code") or row.get("nteeCode")
         if not decile:
             continue
-
         city = row.get("city") or ""
         state = row.get("state") or ""
         location_str: Optional[str] = None
@@ -190,11 +184,9 @@ def group_charities_by_decile(rows: List[CharityRow]) -> Dict[str, List[Dict[str
             "websiteUrl": None,
             "nteeCode": decile,
             "location": location_str,
-            "description": None,
-        }
+            "description": None,}
         grouped.setdefault(decile, []).append(normalized)
     return grouped
-
 
 def fetch_every_nonprofit_detail(ein: str) -> Optional[Dict[str, Any]]:
     """
@@ -210,7 +202,6 @@ def fetch_every_nonprofit_detail(ein: str) -> Optional[Dict[str, Any]]:
     api_key = get_api_key()
     url = f"{EVERY_NONPROFIT_BASE_URL}/{ein}"
     params = {"apiKey": api_key}
-
     try:
         resp = requests.get(url, params=params, timeout=10)
     except requests.RequestException:
@@ -224,15 +215,12 @@ def fetch_every_nonprofit_detail(ein: str) -> Optional[Dict[str, Any]]:
     except ValueError:
         _EVERY_CACHE[ein] = None
         return None
-
     nonprofit = payload.get("data", {}).get("nonprofit")
     if not isinstance(nonprofit, dict) or not nonprofit:
         _EVERY_CACHE[ein] = None
         return None
-
     _EVERY_CACHE[ein] = nonprofit
     return nonprofit
-
 
 def enrich_charities_with_every(charities: List[Dict[str, Optional[str]]]) -> None:
     """
@@ -242,17 +230,14 @@ def enrich_charities_with_every(charities: List[Dict[str, Optional[str]]]) -> No
         ein = charity.get("ein")
         if not ein:
             continue
-
         detail = fetch_every_nonprofit_detail(ein)
         if not detail:
             continue
-
         profile_url = detail.get("profileUrl") or detail.get("profile") or detail.get("url")
         website_url = detail.get("websiteUrl") or detail.get("website")
         description = detail.get("description") or detail.get("mission")
         location = detail.get("location") or detail.get("locationName") or charity.get("location")
         ntee_code = detail.get("nteeCode") or charity.get("nteeCode")
-
         if profile_url:
             charity["profileUrl"] = profile_url
         if website_url:
@@ -271,11 +256,7 @@ def get_api_key() -> str:
         raise HTTPException(status_code=500, detail="EVERY_API_KEY is not configured.")
     return api_key
 
-
-def get_daily_featured_pool(
-    pool_size: int = 200,
-    seed: Optional[int] = None,
-) -> List[Dict[str, Optional[str]]]:
+def get_daily_featured_pool(pool_size: int = 200, seed: Optional[int] = None,) -> List[Dict[str, Optional[str]]]:
     """
     Fetch a broad pool of normalized charities from the catalog for the featured list.
     """
@@ -291,15 +272,13 @@ def get_daily_featured_pool(
         deciles=deciles,
         state=None,
         pool_size=pool_size,
-        seed=seed,
-    )
+        seed=seed,)
 
     normalized: List[Dict[str, Optional[str]]] = []
     for row in rows:
         decile = row.get("ntee_code") or row.get("nteeCode")
         if not decile:
             continue
-
         city = row.get("city") or ""
         state = row.get("state") or ""
         location_str: Optional[str] = None
@@ -307,7 +286,6 @@ def get_daily_featured_pool(
             location_str = f"{city}, {state}"
         elif state:
             location_str = state
-
         normalized.append(
             {
                 "name": row.get("name") or "Unknown",
@@ -316,19 +294,10 @@ def get_daily_featured_pool(
                 "websiteUrl": None,
                 "nteeCode": decile,
                 "location": location_str,
-                "description": None,
-            }
-        )
-
+                "description": None,})
     return normalized
 
-
-
-
-def round_robin_select(
-    charities_by_code: Dict[str, List[Dict[str, Optional[str]]]],
-    limit: int = MAX_CHARITIES,
-) -> List[Dict[str, Optional[str]]]:
+def round_robin_select(charities_by_code: Dict[str, List[Dict[str, Optional[str]]]], limit: int = MAX_CHARITIES,) -> List[Dict[str, Optional[str]]]:
     selected: List[Dict[str, Optional[str]]] = []
     seen_ids: set[str] = set()
     codes = [code for code, charities in charities_by_code.items() if charities]
@@ -336,7 +305,6 @@ def round_robin_select(
 
     if not codes:
         return selected
-
     while len(selected) < limit:
         progressed = False
         for code in codes:
@@ -348,21 +316,16 @@ def round_robin_select(
                 idx += 1
                 if not unique_id or unique_id in seen_ids:
                     continue
-
                 seen_ids.add(unique_id)
                 selected.append(charity)
                 indices[code] = idx
                 progressed = True
                 break
-
             if len(selected) >= limit:
                 break
-
         if not progressed:
             break
-
     return selected
-
 
 app = FastAPI(title="Charity Recommender API")
 
@@ -370,8 +333,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
     allow_methods=["POST", "OPTIONS"],
-    allow_headers=["Content-Type"],
-)
+    allow_headers=["Content-Type"],)
 
 
 @app.post("/recommend", response_model=CharityResponse)
@@ -398,14 +360,12 @@ def recommend_charities(payload: SurveyRequest) -> CharityResponse:
         deciles=target_deciles,
         state=None if state_code == "any" else state_code,
         pool_size=pool_size,
-        seed=seed,
-    )
+        seed=seed,)
 
     if not pool:
         raise HTTPException(
             status_code=404,
-            detail="No charities found in the database for these NTEE codes and location.",
-        )
+            detail="No charities found in the database for these NTEE codes and location.",)
 
     charities_by_decile = group_charities_by_decile(pool)
     selected = round_robin_select(charities_by_decile, limit=MAX_CHARITIES)
@@ -413,18 +373,14 @@ def recommend_charities(payload: SurveyRequest) -> CharityResponse:
     if not selected:
         raise HTTPException(
             status_code=404,
-            detail="No charities could be selected after grouping.",
-        )
-
+            detail="No charities could be selected after grouping.",)
     enrich_charities_with_every(selected)
 
     return CharityResponse(
         generic_code=generic_code,
         location=location,
         ntee_codes=target_deciles,
-        charities=selected,
-    )
-
+        charities=selected,)
 
 @app.get("/featured")
 def get_featured_charities() -> Dict[str, Any]:
@@ -451,5 +407,4 @@ def get_featured_charities() -> Dict[str, Any]:
     return {
         "date": today.isoformat(),
         "count": len(featured),
-        "charities": featured,
-    }
+        "charities": featured,}

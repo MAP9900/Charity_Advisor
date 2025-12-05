@@ -6,16 +6,13 @@ Usage:
 """
 
 from __future__ import annotations
-
 import sqlite3
 from pathlib import Path
 from typing import Iterable, List, Optional, Tuple
-
 import pandas as pd
 
 CLEAN_CSV = Path("data/cleaned_irs_charities.csv")
 DB_PATH = Path("data/charities.db")
-
 
 def load_clean_csv(path: Path) -> pd.DataFrame:
     """Load the cleaned IRS CSV."""
@@ -26,7 +23,6 @@ def load_clean_csv(path: Path) -> pd.DataFrame:
     print(f"Loaded {len(df):,} rows.")
     return df
 
-
 def create_database(db_path: Path) -> sqlite3.Connection:
     """Create the SQLite database (deleting existing file)."""
     if db_path.exists():
@@ -35,7 +31,6 @@ def create_database(db_path: Path) -> sqlite3.Connection:
     db_path.parent.mkdir(parents=True, exist_ok=True)
     print(f"Creating new database at {db_path}")
     return sqlite3.connect(db_path)
-
 
 def create_schema(conn: sqlite3.Connection) -> None:
     """Create the charities table and indexes."""
@@ -53,38 +48,31 @@ def create_schema(conn: sqlite3.Connection) -> None:
         "CREATE INDEX idx_charities_state ON charities(state);",
         "CREATE INDEX idx_charities_ntee ON charities(ntee_code);",
         "CREATE INDEX idx_charities_major ON charities(ntee_major);",
-        "CREATE INDEX idx_charities_major_state ON charities(ntee_major, state);",
-    ]
+        "CREATE INDEX idx_charities_major_state ON charities(ntee_major, state);",]
     conn.executescript(schema)
     for idx in indexes:
         conn.execute(idx)
     conn.commit()
     print("Database schema and indexes created.")
 
-
 def prepare_rows(df: pd.DataFrame) -> List[Tuple[Optional[str], Optional[str], Optional[str], Optional[str], Optional[str], Optional[str]]]:
     """Clean and convert DataFrame rows to tuples ready for insertion."""
     df = df.copy()
-
     for col in ["ein", "name", "city", "state", "ntee_code", "ntee_major"]:
         if col not in df.columns:
             df[col] = pd.NA
-
     df["ein"] = df["ein"].astype(str).str.strip()
     df["state"] = df["state"].astype(str).str.strip().str.upper()
     df["ntee_major"] = df["ntee_major"].astype(str).str.strip().str.upper()
     df["ntee_code"] = df["ntee_code"].astype(str).str.strip().str.upper()
     df["name"] = df["name"].astype(str).str.strip()
     df["city"] = df["city"].astype(str).str.strip()
-
     df = df.drop_duplicates(subset=["ein"])
-
     def normalize(value: Optional[str]) -> Optional[str]:
         if value is None:
             return None
         value = str(value).strip()
         return value if value else None
-
     rows = [
         (
             normalize(row.ein),
@@ -92,13 +80,10 @@ def prepare_rows(df: pd.DataFrame) -> List[Tuple[Optional[str], Optional[str], O
             normalize(row.city),
             normalize(row.state),
             normalize(row.ntee_code),
-            normalize(row.ntee_major),
-        )
+            normalize(row.ntee_major),)
         for row in df.itertuples(index=False)
-        if normalize(row.ein)
-    ]
+        if normalize(row.ein)]
     return rows
-
 
 def insert_rows(conn: sqlite3.Connection, rows: Iterable[Tuple[Optional[str], Optional[str], Optional[str], Optional[str], Optional[str], Optional[str]]]) -> None:
     """Insert prepared rows into the charities table using executemany."""
@@ -107,10 +92,8 @@ def insert_rows(conn: sqlite3.Connection, rows: Iterable[Tuple[Optional[str], Op
         INSERT OR IGNORE INTO charities (ein, name, city, state, ntee_code, ntee_major)
         VALUES (?, ?, ?, ?, ?, ?);
         """,
-        rows,
-    )
+        rows,)
     conn.commit()
-
 
 def main() -> None:
     df = load_clean_csv(CLEAN_CSV)
@@ -134,7 +117,6 @@ def main() -> None:
         print(f"SQLite database created at: {DB_PATH.resolve()}")
     finally:
         conn.close()
-
 
 if __name__ == "__main__":
     main()

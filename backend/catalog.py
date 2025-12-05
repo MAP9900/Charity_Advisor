@@ -6,7 +6,6 @@ app can fetch charity records by NTEE codes, majors, and states.
 """
 
 from __future__ import annotations
-
 import random
 import sqlite3
 from pathlib import Path
@@ -17,7 +16,6 @@ DB_PATH = BASE_DIR / "data" / "charities.db"
 
 _CONNECTION: Optional[sqlite3.Connection] = None
 
-
 class CharityRow(TypedDict):
     ein: str
     name: str
@@ -25,7 +23,6 @@ class CharityRow(TypedDict):
     state: Optional[str]
     ntee_code: str
     ntee_major: str
-
 
 def get_connection() -> sqlite3.Connection:
     """
@@ -43,7 +40,6 @@ def get_connection() -> sqlite3.Connection:
         _CONNECTION.row_factory = sqlite3.Row
     return _CONNECTION
 
-
 def _rows_to_charities(rows: List[sqlite3.Row]) -> List[CharityRow]:
     """Convert sqlite rows to CharityRow dicts."""
     results: List[CharityRow] = []
@@ -55,17 +51,13 @@ def _rows_to_charities(rows: List[sqlite3.Row]) -> List[CharityRow]:
                 city=row["city"],
                 state=row["state"],
                 ntee_code=row["ntee_code"],
-                ntee_major=row["ntee_major"],
-            )
-        )
+                ntee_major=row["ntee_major"],))
     return results
-
 
 def _normalize_deciles(deciles: List[str]) -> List[str]:
     """Return a cleaned list of uppercase decile codes, ignoring empties."""
     cleaned = [d.strip().upper() for d in deciles if isinstance(d, str) and d.strip()]
     return cleaned
-
 
 def _normalize_state(state: Optional[str]) -> Optional[str]:
     """Normalize state input, treating 'any' (case-insensitive) as None."""
@@ -76,20 +68,14 @@ def _normalize_state(state: Optional[str]) -> Optional[str]:
         return None
     return state
 
-
 def _execute_query(query: str, params: List[str]) -> List[sqlite3.Row]:
     """Helper to run a read query and return rows."""
     conn = get_connection()
     cursor = conn.execute(query, params)
     return cursor.fetchall()
 
-
-def fetch_by_deciles(
-    deciles: List[str],
-    state: Optional[str] = None,
-    limit: int = 100,
-    use_random_order: bool = True,
-) -> List[CharityRow]:
+def fetch_by_deciles(deciles: List[str], state: Optional[str] = None, limit: int = 100, 
+                     use_random_order: bool = True,) -> List[CharityRow]:
     """
     Return up to `limit` charities whose ntee_code is in `deciles`.
     If `state` is provided and not equal to 'any', attempt to filter by state first.
@@ -102,8 +88,7 @@ def fetch_by_deciles(
     placeholders = ",".join(["?"] * len(cleaned_deciles))
     base_query = (
         "SELECT ein, name, city, state, ntee_code, ntee_major "
-        "FROM charities WHERE ntee_code IN ({placeholders})"
-    ).format(placeholders=placeholders)
+        "FROM charities WHERE ntee_code IN ({placeholders})").format(placeholders=placeholders)
     order_clause = " ORDER BY RANDOM()" if use_random_order else ""
     order_limit_clause = f"{order_clause} LIMIT ?"
 
@@ -124,7 +109,6 @@ def fetch_by_deciles(
     rows = _execute_query(query, params)
     return _rows_to_charities(rows)
 
-
 def fetch_by_major(major_letter: str, state: Optional[str] = None, limit: int = 100) -> List[CharityRow]:
     """
     Return up to `limit` charities where ntee_major matches the letter.
@@ -138,8 +122,7 @@ def fetch_by_major(major_letter: str, state: Optional[str] = None, limit: int = 
 
     base_query = (
         "SELECT ein, name, city, state, ntee_code, ntee_major "
-        "FROM charities WHERE ntee_major = ?"
-    )
+        "FROM charities WHERE ntee_major = ?" )
     order_limit_clause = " ORDER BY RANDOM() LIMIT ?"
     normalized_state = _normalize_state(state)
 
@@ -153,13 +136,8 @@ def fetch_by_major(major_letter: str, state: Optional[str] = None, limit: int = 
     rows = _execute_query(query, [major_letter, limit])
     return _rows_to_charities(rows)
 
-
-def fetch_random_pool_for_deciles(
-    deciles: List[str],
-    state: Optional[str],
-    pool_size: int,
-    seed: Optional[int] = None,
-) -> List[CharityRow]:
+def fetch_random_pool_for_deciles(deciles: List[str], state: Optional[str], 
+                                  pool_size: int,seed: Optional[int] = None,) -> List[CharityRow]:
     """
     Fetch a larger pool of charities by deciles (with optional state filter),
     shuffle deterministically if `seed` is provided, and return up to pool_size.
@@ -171,8 +149,7 @@ def fetch_random_pool_for_deciles(
         deciles,
         state=state,
         limit=large_limit,
-        use_random_order=seed is None,
-    )
+        use_random_order=seed is None,)
     if seed is not None:
         rng = random.Random(seed)
         rng.shuffle(results)
