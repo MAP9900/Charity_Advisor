@@ -1,6 +1,7 @@
 # Charity Recommender
 
 Data Source 1: https://docs.every.org/docs/endpoints/nonprofit-search
+
 Data Source 2: https://www.irs.gov/charities-non-profits/exempt-organizations-business-master-file-extract-eo-bmf
 
 ## IRS Data Cleaning Workflow
@@ -16,7 +17,6 @@ To build the offline dataset of IRS 501(c)(3) organizations:
 4. The script merges, standardizes, and filters the raw CSVs, then writes the cleaned output to `data/cleaned_irs_charities.csv`. The console log includes row counts before/after cleaning plus a quick sample of the resulting data.
 
 This cleaned file can then be used for the subsequent database import step.
-
 
 
 ## Testing: 
