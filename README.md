@@ -1,6 +1,7 @@
 # Charity Recommender
 
 Data Source 1: https://docs.every.org/docs/endpoints/nonprofit-search
+Data Source 2: https://www.irs.gov/charities-non-profits/exempt-organizations-business-master-file-extract-eo-bmf
 
 ## IRS Data Cleaning Workflow
 
@@ -18,18 +19,19 @@ This cleaned file can then be used for the subsequent database import step.
 
 
 
-Testing: 
-
+## Testing: 
 Backend:
-
-cd '/Users/matthewplambeck/Desktop/Charity_Recommender copy'
+``` python
+cd /path/to/your/directory
 sqlite3 data/charities.db "SELECT COUNT(*) FROM charities;"
 export EVERY_API_KEY=pk_live_eb9141b3fe7b78b7644c2c838016abd5
 cd backend
 source .venv/bin/activate
 -r requirements.txt
 uvicorn app:app --reload --host 0.0.0.0 --port 8000
-
+```
 Frontend:
-cd '/Users/matthewplambeck/Desktop/Charity_Recommender copy/docs'
+``` python
+cd /path/to/your/directory/docs
 python3 -m http.server 5500
+```
