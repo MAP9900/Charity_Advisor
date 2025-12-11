@@ -226,6 +226,9 @@ def enrich_charities_with_every(charities: List[Dict[str, Optional[str]]]) -> No
     """
     Enrich the in-memory charity dicts using Every.org data when available.
     """
+    if not os.getenv("EVERY_API_KEY"):
+        # Skip enrichment when the Every.org API key is not configured.
+        return
     for charity in charities:
         ein = charity.get("ein")
         if not ein:
