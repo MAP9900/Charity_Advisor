@@ -16,8 +16,7 @@ export async function loadConfig() {
         throw error;
       });
   }
-  return state.configPromise;
-}
+  return state.configPromise;}
 
 export async function apiFetch(path, options = {}) {
   const config = await loadConfig();
