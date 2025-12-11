@@ -18,7 +18,7 @@ Backend:
 ``` python
 cd /path/to/your/directory
 sqlite3 data/charities.db "SELECT COUNT(*) FROM charities;"
-export EVERY_API_KEY=pk_live_eb9141b3fe7b78b7644c2c838016abd5
+export EVERY_API_KEY=-_____
 cd backend
 source .venv/bin/activate
 -r requirements.txt
