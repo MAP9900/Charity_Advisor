@@ -1,9 +1,39 @@
-# Charity Recommender
+# Charity Advisor: Finding Your Perfect Match
+## Highlights 
+- Using our frontend interface, answer four questions to find charitable organizations matching your ethical desires!
+- Our mostly automated process involves contacting a SQLite database using our provided API key.
+- All organizations included in the search are IRS verified organiztions, ensuring a level of operation effectiveness. 
 
-Data Source 1: https://docs.every.org/docs/endpoints/nonprofit-search
+## Overview
+As the charitable sector continues to expand, the overwhelming number of options leads to choice fatigue, and subsequently, lower donation frequency among Americans. Our **Charity_Advisor** simplifies the search using the leading charity-based API, Every.org; the site provides access to one million IRS 501(c)(3) organizations corresponding the NTEE Codes established by the IRS surrounding organization purpose. 
+
+*How it works:* 
+1. To find your potential match, answer four simple questions centered around user values and locality preference.
+2. After your four selections, run your search using the 'Get survey results' button to find the top three randomly selected organizations.
+3. If these results aren’t the right fit, use the 'Load more' button to view three additional charities at a time until the limit of fifteen.
+4. If you discover an organization you love, as we're certain you will, and want to explore more options, simply refresh the page and complete the survey again to receive a new set of recommendations!
+
+## Testing: 
+Backend:
+``` python
+cd /path/to/your/directory
+sqlite3 data/charities.db "SELECT COUNT(*) FROM charities;"
+export EVERY_API_KEY=pk_live_eb9141b3fe7b78b7644c2c838016abd5
+cd backend
+source .venv/bin/activate
+-r requirements.txt
+uvicorn app:app --reload --host 0.0.0.0 --port 8000
+```
+Frontend:
+``` python
+cd /path/to/your/directory/docs
+python3 -m http.server 5500
+```
+
+## Our Process 
+Our approach leverages the Every.org Charity API NTEE Codes as the core mechanism to match user values with organizational missions. In order to deliver this idea, we built a backend API to handle external data fetching and processing, coupled with a frontend interface for user interaction. Crucially, we integrated IRS regional data to allow users to filter by locality since we recognized that geographic preference is a significant driver of donation retention. 
 
 ## IRS Data Cleaning Workflow
-
 To build the offline dataset of IRS 501(c)(3) organizations:
 
 1. Download the four IRS EO BMF CSV region files into the local `data/` directory.
@@ -18,37 +48,18 @@ This cleaned file can then be used for the subsequent database import step.
 
 
 
-## Running the project
+Testing: 
 
-These steps assume you already have the repo on disk at `/Users/matthewplambeck/Desktop/Charity_Recommender copy`, Python 3.11+, and SQLite installed. Replace paths as needed for your own machine.
+Backend:
 
-### 1. Prep the dataset
-
-```
 cd '/Users/matthewplambeck/Desktop/Charity_Recommender copy'
 sqlite3 data/charities.db "SELECT COUNT(*) FROM charities;"
-```
-
-If the query returns `0`, build/import the charity data before continuing (see the IRS workflow above). Otherwise you are ready to launch the backend.
-
-### 2. Start the backend API
-
-```
-cd '/Users/matthewplambeck/Desktop/Charity_Recommender copy/backend'
-python -m venv .venv  # skip if the env already exists
+export EVERY_API_KEY=pk_live_eb9141b3fe7b78b7644c2c838016abd5
+cd backend
 source .venv/bin/activate
-pip install -r requirements.txt
-export EVERY_API_KEY=__________
+-r requirements.txt
 uvicorn app:app --reload --host 0.0.0.0 --port 8000
-```
 
-The `EVERY_API_KEY` powers the nonprofit search endpoint; inject your own key if you have one. Uvicorn exposes the FastAPI server at `http://localhost:8000` with auto-reload enabled for development.
-
-### 3. Run the static frontend
-
-```
+Frontend:
 cd '/Users/matthewplambeck/Desktop/Charity_Recommender copy/docs'
 python3 -m http.server 5500
-```
-
-Visit `http://localhost:5500` to load the static UI. It will call the backend running on port 8000. Stop both servers with `Ctrl+C` when you are done testing.
