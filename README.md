@@ -30,6 +30,16 @@ cd /path/to/your/directory/docs
 python3 -m http.server 5500
 ```
 
+## Deployment (Railway + GitHub Pages)
+
+1. **Deploy the backend on Railway.** Create a Railway project, connect this GitHub repo, and (under Advanced settings) set the root directory to `backend`. Use `pip install -r requirements.txt` as the build command and `uvicorn app:app --host 0.0.0.0 --port $PORT` as the start command. Add `EVERY_API_KEY` in the Variables tab so it is available during runtime.
+2. **Grab the public URL.** Open the service on Railway and go to **Settings → Domains**. Copy the generated `https://*.up.railway.app` URL; visit `<your-url>/docs` in a browser to confirm the FastAPI Swagger UI loads. That endpoint is what the frontend will call.
+3. **Point the frontend at Railway.** Edit `docs/config.json` so that `apiBase` matches the Railway URL you copied. Commit and push so GitHub Pages receives the update; switch it back to `http://localhost:8000` only when testing locally.
+4. **Allow the Pages origin.** Make sure your GitHub Pages origin (for example `https://map9900.github.io`) exists in the `ALLOWED_ORIGINS` list in `backend/app.py`. Redeploy the backend whenever this list changes.
+5. **Publish the docs folder.** Enable GitHub Pages (Settings → Pages) to serve from the `/docs` folder on `main`. After Pages finishes building, open the site and test the survey—it should call the Railway API you verified in step 2.
+
+If something fails, recheck the Railway logs (Deployments tab) for backend errors, verify `apiBase` in `docs/config.json` has no trailing slash or typos, and confirm CORS is configured for your Pages domain.
+
 ## Our Process 
 Our approach leverages the Every.org Charity API NTEE Codes as the core mechanism to match user values with organizational missions. In order to deliver this idea, we built a backend API to handle external data fetching and processing, coupled with a frontend interface for user interaction. Crucially, we integrated IRS regional data to allow users to filter by locality since we recognized that geographic preference is a significant driver of donation retention. 
 

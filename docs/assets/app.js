@@ -1,48 +1,4 @@
-const state = {
-  configPromise: null,
-};
-
-export async function loadConfig() {
-  if (!state.configPromise) {
-    state.configPromise = fetch('config.json', { cache: 'no-cache' })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Unable to load config.json');
-        }
-        return response.json();
-      })
-      .catch((error) => {
-        console.error(error);
-        throw error;
-      });
-  }
-  return state.configPromise;}
-
-export async function apiFetch(path, options = {}) {
-  const config = await loadConfig();
-  const base = config.apiBase?.replace(/\/$/, '') ?? '';
-  const url = `${base}${path.startsWith('/') ? path : `/${path}`}`;
-  const mergedOptions = {
-    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
-    ...options,
-  };
-
-  const response = await fetch(url, mergedOptions);
-  if (!response.ok) {
-    const errorBody = await safeJson(response);
-    const message = errorBody?.detail || errorBody?.message || response.statusText;
-    throw new Error(message || 'Request failed');
-  }
-  return response.json();
-}
-
-async function safeJson(response) {
-  try {
-    return await response.json();
-  } catch (_) {
-    return null;
-  }
-}
+import { apiFetch } from './client.js';
 
 export function renderCharityCard(charity) {
   const card = document.createElement('article');

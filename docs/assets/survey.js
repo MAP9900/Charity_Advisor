@@ -1,4 +1,6 @@
-const BACKEND_BASE_URL = 'http://localhost:8000';
+import { apiFetch } from './client.js';
+
+const RECOMMEND_ENDPOINT = '/recommend';
 const PAGE_SIZE = 3;
 
 let allCharities = [];
@@ -11,8 +13,6 @@ let resultsContainer;
 let loadMoreBtn;
 let errorMessage;
 let resultsMessage;
-
-const trimTrailingSlash = (url) => url.replace(/\/+$/, '');
 
 function cloneSubmitButton(button) {
   if (!button || !button.parentNode) return button;
@@ -207,25 +207,10 @@ async function handleSurveySubmit(event) {
   }
 
   try {
-    const endpoint = `${trimTrailingSlash(BACKEND_BASE_URL)}/recommend`;
-    const response = await fetch(endpoint, {
+    const data = await apiFetch(RECOMMEND_ENDPOINT, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ generic_code: genericCode, location }),
     });
-
-    let data = null;
-    try {
-      data = await response.json();
-    } catch {
-      // Ignore JSON parse errors; handled below.
-    }
-
-    if (!response.ok) {
-      const detail = data?.detail || 'Unable to fetch recommendations.';
-      throw new Error(detail);
-    }
-
     allCharities = Array.isArray(data?.charities) ? data.charities : [];
     if (!allCharities.length) {
       if (resultsMessage) {

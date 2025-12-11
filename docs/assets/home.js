@@ -1,5 +1,6 @@
-const BACKEND_BASE_URL = 'http://localhost:8000';
-const FEATURED_ENDPOINT = `${BACKEND_BASE_URL}/featured`;
+import { resolveApiUrl } from './client.js';
+
+const FEATURED_ENDPOINT_PATH = '/featured';
 
 const featuredSection = document.getElementById('featured-section');
 const featuredMessage = document.getElementById('featured-message');
@@ -127,7 +128,8 @@ async function loadFeaturedCharities() {
   }
 
   try {
-    const response = await fetch(FEATURED_ENDPOINT);
+    const endpoint = await resolveApiUrl(FEATURED_ENDPOINT_PATH);
+    const response = await fetch(endpoint);
     if (!response.ok) {
       throw new Error('Failed to fetch featured charities.');
     }
