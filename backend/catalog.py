@@ -11,7 +11,7 @@ import sqlite3
 from pathlib import Path
 from typing import List, Optional, TypedDict
 
-BASE_DIR = Path(__file__).resolve().parents[1]
+BASE_DIR = Path(__file__).resolve().parent
 DB_PATH = BASE_DIR / "data" / "charities.db"
 
 _CONNECTION: Optional[sqlite3.Connection] = None
