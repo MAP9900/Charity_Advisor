@@ -1,0 +1,13 @@
+[phases.setup]
+aptPkgs = ['git-lfs']
+
+[phases.install]
+cmds = [
+  'git lfs install',
+  'git lfs fetch',
+  'git lfs checkout',
+  'pip install -r requirements.txt'
+]
+
+[start]
+cmd = 'uvicorn app:app --host 0.0.0.0 --port $PORT'
