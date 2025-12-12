@@ -1,3 +1,4 @@
 # Auto detect text files and perform LF normalization
 * text=auto
 data/charities.db filter=lfs diff=lfs merge=lfs -text
+backend/data/charities.db filter=lfs diff=lfs merge=lfs -text
