@@ -3,9 +3,9 @@ aptPkgs = ['git-lfs']
 
 [phases.install]
 cmds = [
-  'git lfs install',
-  'git lfs fetch',
-  'git lfs checkout',
+  'git -C .. lfs install',
+  'git -C .. lfs fetch',
+  'git -C .. lfs checkout',
   'pip install -r requirements.txt'
 ]
 
