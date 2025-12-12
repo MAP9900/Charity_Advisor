@@ -131,6 +131,7 @@ GENERIC_TO_NTEE: Dict[str, List[str]] = {
 
 ALLOWED_ORIGINS = [
     "https://map9900.github.io",
+    "https://charityadvisor-production.up.railway.app",
     "http://localhost:5173",
     "http://localhost:3000",
     "http://localhost:5500",
