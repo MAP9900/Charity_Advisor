@@ -1,6 +1,6 @@
 # Charity Advisor: Finding Your Perfect Match
 
-Still Trying to turn into actual webpage!!  
+If you are reading this, I am still Trying to turn into actual webpage!!  I plan to be done tonight tho! Sorry!
 
 ## ✨Highlights✨
 * **Personalized Matching:** Answer four simple questions based on your values and locality preference to find relevant charities.
