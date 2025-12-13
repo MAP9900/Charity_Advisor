@@ -1,6 +1,6 @@
 # Charity Advisor: Finding Your Perfect Match
 
-The live Website: https://map9900.github.io/Charity_Advisor/survey.html 
+The live Website: https://map9900.github.io/Charity_Advisor.html 
 
 ## ✨Highlights✨
 * **Personalized Matching:** Answer four simple questions based on your values and locality preference to find relevant charities.
